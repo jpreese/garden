@@ -36,7 +36,7 @@ import { CommonServiceSpec } from "../config/service"
 import { BaseTestSpec, baseTestSpecSchema } from "../config/test"
 import { readModuleVersionFile, writeModuleVersionFile, ModuleVersion } from "../vcs/base"
 import { GARDEN_BUILD_VERSION_FILENAME } from "../constants"
-import { ModuleSpec, BaseBuildSpec, baseBuildSpecSchema } from "../config/module"
+import { ModuleSpec, BaseBuildSpec, baseBuildSpecSchema, ModuleConfig } from "../config/module"
 import execa = require("execa")
 import { BaseTaskSpec, baseTaskSpecSchema } from "../config/task"
 
@@ -76,6 +76,8 @@ export interface ExecModuleSpec extends ModuleSpec {
   tasks: ExecTaskSpec[],
   tests: ExecTestSpec[],
 }
+
+export type ExecModuleConfig = ModuleConfig<ExecModuleSpec>
 
 export const execBuildSpecSchema = baseBuildSpecSchema
   .keys({

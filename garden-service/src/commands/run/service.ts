@@ -65,7 +65,8 @@ export class RunServiceCommand extends Command<Args, Opts> {
       command: `Running service ${chalk.cyan(serviceName)} in module ${chalk.cyan(module.name)}`,
     })
 
-    await garden.actions.prepareEnvironment({ log })
+    const actions = await garden.getActionHandler()
+    await actions.prepareEnvironment({ log })
 
     const pushTask = new PushTask({ garden, log, module, force: opts["force-build"] })
     await garden.processTasks([pushTask])
@@ -75,7 +76,7 @@ export class RunServiceCommand extends Command<Args, Opts> {
 
     printRuntimeContext(log, runtimeContext)
 
-    const result = await garden.actions.runService({
+    const result = await actions.runService({
       log,
       service,
       runtimeContext,

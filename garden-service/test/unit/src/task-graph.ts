@@ -1,14 +1,9 @@
 import { join } from "path"
 import { expect } from "chai"
 import { BaseTask } from "../../../src/tasks/base"
-import {
-  TaskGraph,
-  TaskResult,
-  TaskResults,
-} from "../../../src/task-graph"
+import { TaskGraph, TaskResult, TaskResults } from "../../../src/task-graph"
 import { makeTestGarden, freezeTime } from "../../helpers"
 import { Garden } from "../../../src/garden"
-import { DependencyGraphNodeType } from "../../../src/config-graph"
 
 const projectRoot = join(__dirname, "..", "data", "test-project-empty")
 
@@ -23,7 +18,6 @@ interface TestTaskOptions {
 
 class TestTask extends BaseTask {
   type = "test"
-  depType: DependencyGraphNodeType = "test"
   name: string
   callback: TestTaskCallback | null
   id: string
@@ -107,6 +101,7 @@ describe("task-graph", () => {
           type: "test",
           description: "a",
           key: "a",
+          name: "a",
           output: {
             result: "result-a",
             dependencyResults: {},
@@ -118,7 +113,7 @@ describe("task-graph", () => {
       expect(results).to.eql(expected)
     })
 
-    it("should emit events when processing and completing a task", async () => {
+    it("should emit a taskPending event when adding a task", async () => {
       const now = freezeTime()
 
       const garden = await getGarden()
@@ -135,12 +130,15 @@ describe("task-graph", () => {
       ])
     })
 
-    it("should not emit a taskPending event when adding a task with a cached result", async () => {
+    it("should throw if tasks have circular dependencies", async () => {
+      throw new Error("TODO")
+    })
+
+    it("should emit events when processing and completing a task", async () => {
       const now = freezeTime()
 
       const garden = await getGarden()
       const graph = new TaskGraph(garden, garden.log)
-
       const task = new TestTask(garden, "a", false)
       await graph.process([task])
 
@@ -236,6 +234,7 @@ describe("task-graph", () => {
         type: "test",
         description: "a.a1",
         key: "a.a1",
+        name: "a",
         output: {
           result: "result-a.a1",
           dependencyResults: {},
@@ -245,6 +244,7 @@ describe("task-graph", () => {
       const resultB: TaskResult = {
         type: "test",
         key: "b.b1",
+        name: "b",
         description: "b.b1",
         output: {
           result: "result-b.b1",
@@ -256,6 +256,7 @@ describe("task-graph", () => {
         type: "test",
         description: "c.c1",
         key: "c.c1",
+        name: "c",
         output: {
           result: "result-c.c1",
           dependencyResults: { b: resultB },
@@ -271,6 +272,7 @@ describe("task-graph", () => {
           type: "test",
           description: "d.d1",
           key: "d.d1",
+          name: "d",
           output: {
             result: "result-d.d1",
             dependencyResults: {
@@ -333,6 +335,7 @@ describe("task-graph", () => {
         type: "test",
         description: "a",
         key: "a",
+        name: "a",
         output: {
           result: "result-a",
           dependencyResults: {},

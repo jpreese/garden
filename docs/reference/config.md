@@ -30,6 +30,14 @@ The schema version of this project's config (currently not used).
 | Type | Required | Allowed Values |
 | ---- | -------- | -------------- |
 | `string` | Yes | "garden.io/v0"
+### `project.kind`
+[project](#project) > kind
+
+
+
+| Type | Required | Allowed Values |
+| ---- | -------- | -------------- |
+| `string` | Yes | "Project"
 ### `project.name`
 [project](#project) > name
 
@@ -56,7 +64,7 @@ The default environment to use when calling commands without the `--env` paramet
 ### `project.environmentDefaults`
 [project](#project) > environmentDefaults
 
-Default environment settings. These are inherited (but can be overridden) by each configured environment.
+DEPRECATED - Please use the `providers` field instead, and omit the environments key in the configured provider to use it for all environments, and use the `variables` field to configure variables across all environments.
 
 | Type | Required |
 | ---- | -------- |
@@ -73,7 +81,7 @@ project:
 ### `project.environmentDefaults.providers[]`
 [project](#project) > [environmentDefaults](#project.environmentdefaults) > providers
 
-A list of providers that should be used for this environment, and their configuration. Please refer to individual plugins/providers for details on how to configure them.
+DEPRECATED - Please use the top-level `providers` field instead, and if needed use the `environments` key on the provider configurations to limit them to specific environments.
 
 | Type | Required |
 | ---- | -------- |
@@ -98,43 +106,61 @@ project:
     providers:
       - name: "local-kubernetes"
 ```
+### `project.environmentDefaults.providers[].environments[]`
+[project](#project) > [environmentDefaults](#project.environmentdefaults) > [providers](#project.environmentdefaults.providers[]) > environments
+
+If specified, this provider will only be used in the listed environments. Note that an empty array effectively disables the provider. To use a provider in all environments, omit this field.
+
+| Type | Required |
+| ---- | -------- |
+| `array[string]` | No
+
+Example:
+```yaml
+project:
+  ...
+  environmentDefaults:
+    providers: []
+    variables: {}
+    ...
+    providers:
+      - environments:
+        - dev
+        - stage
+```
 ### `project.environmentDefaults.variables`
 [project](#project) > [environmentDefaults](#project.environmentdefaults) > variables
 
-A key/value map of variables that modules can reference when using this environment.
+A key/value map of variables that modules can reference when using this environment. These take precedence over variables defined in the top-level `variables` field.
 
 | Type | Required |
 | ---- | -------- |
 | `object` | No
-### `project.environments[]`
+### `project.environments`
 [project](#project) > environments
 
 A list of environments to configure for the project.
 
 | Type | Required |
 | ---- | -------- |
-| `array[object]` | No
+| `alternatives` | No
 
 Example:
 ```yaml
 project:
   ...
-  environments:
-    - name: local
-      providers:
-        - name: local-kubernetes
-      variables: {}
+  environments: [{"name":"local","providers":[{"name":"local-kubernetes","environments":[]}],"variables":{}}]
 ```
-### `project.environments[].providers[]`
-[project](#project) > [environments](#project.environments[]) > providers
+### `project.providers[]`
+[project](#project) > providers
 
-A list of providers that should be used for this environment, and their configuration. Please refer to individual plugins/providers for details on how to configure them.
+A list of providers that should be used for this project, and their configuration. Please refer to individual plugins/providers for details on how to configure them.
 
 | Type | Required |
 | ---- | -------- |
 | `array[object]` | No
-### `project.environments[].providers[].name`
-[project](#project) > [environments](#project.environments[]) > [providers](#project.environments[].providers[]) > name
+### `project.providers[].name`
+[project](#project) > [providers](#project.providers[]) > name
 
 The name of the provider plugin to use.
 
@@ -146,30 +172,35 @@ Example:
 ```yaml
 project:
   ...
-  environments:
-    - name: local
-      providers:
-        - name: local-kubernetes
-      variables: {}
-    - providers:
-        - name: "local-kubernetes"
+  providers:
+    - name: "local-kubernetes"
 ```
-### `project.environments[].variables`
-[project](#project) > [environments](#project.environments[]) > variables
+### `project.providers[].environments[]`
+[project](#project) > [providers](#project.providers[]) > environments
 
-A key/value map of variables that modules can reference when using this environment.
-
-| Type | Required |
-| ---- | -------- |
-| `object` | No
-### `project.environments[].name`
-[project](#project) > [environments](#project.environments[]) > name
-
-Valid RFC1035/RFC1123 (DNS) label (may contain lowercase letters, numbers and dashes, must start with a letter, and cannot end with a dash), cannot contain consecutive dashes or start with `garden`, or be longer than 63 characters.
+If specified, this provider will only be used in the listed environments. Note that an empty array effectively disables the provider. To use a provider in all environments, omit this field.
 
 | Type | Required |
 | ---- | -------- |
-| `string` | Yes
+| `array[string]` | No
+
+Example:
+```yaml
+project:
+  ...
+  providers:
+    - environments:
+      - dev
+      - stage
+```
+### `project.providers[].config`
+[project](#project) > [providers](#project.providers[]) > config
+
+
+
+| Type | Required |
+| ---- | -------- |
+| `lazy` | Yes
 ### `project.sources[]`
 [project](#project) > sources
 
@@ -202,26 +233,37 @@ project:
   sources:
     - repositoryUrl: "git+https://github.com/org/repo.git#v2.0"
 ```
+### `project.variables`
+[project](#project) > variables
+
+Variables to configure for all environments.
+
+| Type | Required |
+| ---- | -------- |
+| `object` | No
 
 
 ## Project YAML schema
 ```yaml
 project:
   apiVersion: garden.io/v0
+  kind:
   name:
   defaultEnvironment: ''
   environmentDefaults:
     providers:
       - name:
+        environments:
     variables: {}
   environments:
-    - providers:
-        - name:
-      variables: {}
-      name:
+  providers:
+    - name:
+      environments:
+      config:
   sources:
     - name:
       repositoryUrl:
+  variables: {}
 ```
 
 ## Module configuration keys

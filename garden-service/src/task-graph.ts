@@ -24,6 +24,7 @@ export interface TaskResult {
   type: string
   description: string
   key: string
+  name: string
   output?: any
   dependencyResults?: TaskResults
   error?: Error
@@ -165,7 +166,7 @@ export class TaskGraph {
         const baseKey = node.getBaseKey()
         const description = node.getDescription()
 
-        let result: TaskResult = { type, description, key: task.getKey() }
+        let result: TaskResult = { type, description, key: task.getKey(), name: task.getName() }
 
         try {
           this.logTask(node)
@@ -444,12 +445,13 @@ class TaskNode {
     }
   }
 
-  async process(dependencyResults: TaskResults) {
+  async process(dependencyResults: TaskResults): Promise<TaskResult> {
     const output = await this.task.process(dependencyResults)
 
     return {
       type: this.getType(),
       key: this.getKey(),
+      name: this.task.getName(),
       description: this.getDescription(),
       output,
       dependencyResults,

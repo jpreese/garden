@@ -78,7 +78,8 @@ export class DevCommand extends Command<Args, Opts> {
   }
 
   async action({ garden, log, logFooter, opts }: CommandParams<Args, Opts>): Promise<CommandResult> {
-    await garden.actions.prepareEnvironment({ log })
+    const actions = await garden.getActionHandler()
+    await actions.prepareEnvironment({ log })
 
     const graph = await garden.getConfigGraph()
     const modules = await graph.getModules()

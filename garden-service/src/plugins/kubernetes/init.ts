@@ -116,9 +116,10 @@ export async function getLocalEnvironmentStatus({ ctx, log }: GetEnvironmentStat
 
   if (!isSystemGarden(provider)) {
     // Check if system services are deployed
-    const sysGarden = await getSystemGarden(provider)
-    const sysCtx = <KubernetesPluginContext>await sysGarden.getPluginContext(provider.name)
-    const sysStatus = await sysGarden.actions.getStatus({ log })
+    const sysGarden = await getSystemGarden(<KubernetesProvider>ctx.provider)
+    const sysCtx = <KubernetesPluginContext>await sysGarden.getPluginContext(ctx.provider.name)
+    const actions = await sysGarden.getActionHandler()
+    const sysStatus = await actions.getStatus({ log })
 
     const serviceStatuses = pick(sysStatus.services, getSystemServices(provider))
 
@@ -312,7 +313,7 @@ export async function deleteNamespaces(namespaces: string[], api: KubeApi, log?:
 }
 
 async function getLoginStatus({ ctx }: PluginActionParamsBase) {
-  const localConfig = await ctx.localConfigStore.get()
+  const localConfig = await ctx.configStore.get()
   let currentUsername
   if (localConfig.kubernetes) {
     currentUsername = localConfig.kubernetes.username
@@ -322,7 +323,7 @@ async function getLoginStatus({ ctx }: PluginActionParamsBase) {
 
 async function login({ ctx, log }: PluginActionParamsBase) {
   const entry = log.info({ section: "kubernetes", msg: "Logging in..." })
-  const localConfig = await ctx.localConfigStore.get()
+  const localConfig = await ctx.configStore.get()
 
   let currentUsername
   let prevUsernames: Array<string> = []
@@ -380,7 +381,7 @@ async function login({ ctx, log }: PluginActionParamsBase) {
   const username = ans.username.trim()
   const newPrevUsernames = uniq([...prevUsernames, username].slice(-MAX_STORED_USERNAMES))
 
-  await ctx.localConfigStore.set([
+  await ctx.configStore.set([
     { keyPath: [providerName, "username"], value: username },
     { keyPath: [providerName, "previous-usernames"], value: newPrevUsernames },
   ])
@@ -390,11 +391,11 @@ async function login({ ctx, log }: PluginActionParamsBase) {
 
 async function logout({ ctx, log }: PluginActionParamsBase) {
   const entry = log.info({ section: "kubernetes", msg: "Logging out..." })
-  const localConfig = await ctx.localConfigStore.get()
+  const localConfig = await ctx.configStore.get()
   const k8sConfig = localConfig.kubernetes || {}
 
   if (k8sConfig.username) {
-    await ctx.localConfigStore.delete([providerName, "username"])
+    await ctx.configStore.delete([providerName, "username"])
     entry && entry.setSuccess("Logged out")
   } else {
     entry && entry.setSuccess("Already logged out")
@@ -408,7 +409,7 @@ async function configureSystemServices(
   const k8sCtx = <KubernetesPluginContext>ctx
   const provider = k8sCtx.provider
   const sysGarden = await getSystemGarden(provider)
-  const sysCtx = <KubernetesPluginContext>sysGarden.getPluginContext(provider.name)
+  const sysCtx = <KubernetesPluginContext>await sysGarden.getPluginContext(provider.name)
 
   await installTiller(sysCtx, sysCtx.provider, log)
 
@@ -416,7 +417,8 @@ async function configureSystemServices(
   const systemServices = getSystemServices(k8sCtx.provider)
 
   if (systemServices.length > 0) {
-    const results = await sysGarden.actions.deployServices({
+    const actions = await sysGarden.getActionHandler()
+    const results = await actions.deployServices({
       log,
       serviceNames: systemServices,
       force,

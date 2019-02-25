@@ -11,13 +11,13 @@ import { find } from "lodash"
 
 import { ServiceSpec } from "../../../config/service"
 import {
-  Primitive,
   joiPrimitive,
   joiArray,
   joiIdentifier,
   joiEnvVars,
   validateWithPath,
   joiUserIdentifier,
+  DeepPrimitiveMap,
 } from "../../../config/common"
 import { Module, FileCopySpec } from "../../../types/module"
 import { ConfigureModuleParams } from "../../../types/plugin/params"
@@ -137,7 +137,7 @@ export interface HelmServiceSpec extends ServiceSpec {
   tasks: HelmTaskSpec[]
   tests: HelmTestSpec[]
   version?: string
-  values: { [key: string]: Primitive }
+  values: DeepPrimitiveMap
 }
 
 export type HelmService = Service<HelmModule, ContainerModule>

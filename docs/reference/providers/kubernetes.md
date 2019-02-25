@@ -29,6 +29,25 @@ The reference is divided into two sections. The [first section](#configuration-k
 | Type | Required |
 | ---- | -------- |
 | `array[object]` | No
+### `project.environments[].providers[].environments[]`
+[project](#project) > [environments](#project.environments[]) > [providers](#project.environments[].providers[]) > environments
+
+If specified, this provider will only be used in the listed environments. Note that an empty array effectively disables the provider. To use a provider in all environments, omit this field.
+
+| Type | Required |
+| ---- | -------- |
+| `array[string]` | No
+
+Example:
+```yaml
+project:
+  ...
+  environments:
+    - providers:
+        - environments:
+          - dev
+          - stage
+```
 ### `project.environments[].providers[].defaultHostname`
 [project](#project) > [environments](#project.environments[]) > [providers](#project.environments[].providers[]) > defaultHostname
 
@@ -321,7 +340,8 @@ Specify which namespace to deploy services to (defaults to <username>--<project 
 project:
   environments:
     - providers:
-        - defaultHostname:
+        - environments:
+          defaultHostname:
           defaultUsername:
           forceSsl: false
           imagePullSecrets:

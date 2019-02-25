@@ -29,6 +29,25 @@ The reference is divided into two sections. The [first section](#configuration-k
 | Type | Required |
 | ---- | -------- |
 | `array[object]` | No
+### `project.environments[].providers[].environments[]`
+[project](#project) > [environments](#project.environments[]) > [providers](#project.environments[].providers[]) > environments
+
+If specified, this provider will only be used in the listed environments. Note that an empty array effectively disables the provider. To use a provider in all environments, omit this field.
+
+| Type | Required |
+| ---- | -------- |
+| `array[string]` | No
+
+Example:
+```yaml
+project:
+  ...
+  environments:
+    - providers:
+        - environments:
+          - dev
+          - stage
+```
 ### `project.environments[].providers[].name`
 [project](#project) > [environments](#project.environments[]) > [providers](#project.environments[].providers[]) > name
 
@@ -74,6 +93,7 @@ project:
 project:
   environments:
     - providers:
-        - name:
+        - environments:
+          name:
           hostname:
 ```

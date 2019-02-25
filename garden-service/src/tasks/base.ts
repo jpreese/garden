@@ -10,7 +10,6 @@ import { TaskResults } from "../task-graph"
 import { ModuleVersion } from "../vcs/base"
 import { v1 as uuidv1 } from "uuid"
 import { Garden } from "../garden"
-import { DependencyGraphNodeType } from "../config-graph"
 import { LogEntry } from "../logger/log-entry"
 
 export class TaskDefinitionError extends Error { }
@@ -24,7 +23,6 @@ export interface TaskParams {
 
 export abstract class BaseTask {
   abstract type: string
-  abstract depType: DependencyGraphNodeType
   garden: Garden
   log: LogEntry
   id: string
@@ -46,7 +44,7 @@ export abstract class BaseTask {
     return this.dependencies
   }
 
-  protected abstract getName(): string
+  abstract getName(): string
 
   getBaseKey(): string {
     return `${this.type}.${this.getName()}`

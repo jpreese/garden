@@ -28,7 +28,7 @@ import { containerHelpers } from "../container/helpers"
 import { STATIC_DIR } from "../../constants"
 import { xml2json } from "xml-js"
 import { containerModuleSpecSchema } from "../container/config"
-import { providerConfigBaseSchema } from "../../config/project"
+import { providerConfigBaseSchema } from "../../config/provider"
 import { openJdks } from "./openjdk"
 import { maven } from "./maven"
 import { LogEntry } from "../../logger/log-entry"
@@ -99,7 +99,7 @@ export async function configureMavenContainerModule(params: ConfigureModuleParam
     projectRoot: ctx.projectRoot,
   })
 
-  let containerConfig: ContainerModuleConfig = { ...moduleConfig }
+  let containerConfig: ContainerModuleConfig = { ...moduleConfig, type: "container" }
   containerConfig.spec = <ContainerModuleSpec>omit(moduleConfig.spec, Object.keys(mavenKeys))
 
   const jdkVersion = mavenFields.jdkVersion!

@@ -124,6 +124,7 @@ export async function configureProvider({ config, log, projectName }: ConfigureP
   const ingressClass = config.ingressClass || config.setupIngressController || undefined
 
   config = {
+    // Setting the name to kubernetes, so that plugins that depend on kubernetes can reference it.
     name: config.name,
     context,
     defaultHostname,
@@ -138,5 +139,5 @@ export async function configureProvider({ config, log, projectName }: ConfigureP
     _system: config._system,
   }
 
-  return { name: config.name, config }
+  return { config }
 }

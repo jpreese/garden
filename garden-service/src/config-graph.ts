@@ -22,9 +22,7 @@ import { validateDependencies } from "./util/validate-dependencies"
 import { ServiceConfig } from "./config/service"
 import { TaskConfig } from "./config/task"
 
-// Each of these types corresponds to a Task class (e.g. BuildTask, DeployTask, ...).
-export type DependencyGraphNodeType = "build" | "service" | "task" | "test"
-  | "push" | "publish" // these two types are currently not represented in the graph
+type DependencyGraphNodeType = "build" | "service" | "task" | "test"
 
 // The primary output type (for dependencies and dependants).
 export type DependencyRelations = {

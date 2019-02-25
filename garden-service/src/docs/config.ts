@@ -64,6 +64,7 @@ const moduleTypes = [
 const providers = [
   { name: "local-kubernetes", schema: populateProviderSchema(localK8sConfigSchema) },
   { name: "kubernetes", schema: populateProviderSchema(k8sConfigSchema) },
+  { name: "local-openfaas", schema: populateProviderSchema(openfaasConfigSchema) },
   { name: "openfaas", schema: populateProviderSchema(openfaasConfigSchema) },
   { name: "maven-container", schema: populateProviderSchema(mavenContainerConfigSchema) },
 ]
