@@ -18,7 +18,6 @@ import { logHeader } from "../../logger/util"
 import { highlightYaml } from "../../util/util"
 import { getTaskVersion } from "../../tasks/task"
 import { RunTaskResult } from "../../types/plugin/outputs"
-import { ParameterError } from "../../exceptions"
 import chalk from "chalk"
 
 interface TaskResultOutput {
@@ -30,7 +29,6 @@ interface TaskResultOutput {
   completedAt: Date | null
 }
 
-6
 const getTaskResultArgs = {
   name: new StringParameter({
     help: "The name of the task",
@@ -52,14 +50,6 @@ export class GetTaskResultCommand extends Command<Args> {
     args,
   }: CommandParams<Args>): Promise<CommandResult<TaskResultOutput>> {
     const taskName = args.name
-
-    if (!taskName) {
-      throw new ParameterError(
-        `Failed to find task, provided task name is cannot be empty.`,
-        {},
-      )
-    }
-
     const graph: ConfigGraph = await garden.getConfigGraph()
     const task = await graph.getTask(taskName)
     const taskResult: RunTaskResult | null = await garden.actions.getTaskResult(
@@ -95,7 +85,7 @@ export class GetTaskResultCommand extends Command<Args> {
       return { result: output }
     } else {
       log.info(
-        `Task '${taskName}' was found but failed to load task result for it`,
+        `Could not find results for task '${taskName}'`,
       )
       const output: TaskResultOutput = {
         name: taskName,

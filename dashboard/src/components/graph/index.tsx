@@ -157,8 +157,12 @@ interface State {
 const makeLabel = (name: string, type: string, moduleName: string) => {
   return `
     <div class='label-wrap'>
-      <span class='name'>${moduleName === name ? `${moduleName}` : `${moduleName} - ${name}`}</span>
-
+    <span class='name'>
+      <span  style="color: #6f6f6f;">${moduleName}</span>
+        ${moduleName !== name ?
+      `<span> / </span>
+           <span>${name}</span>` :
+      ``}
       <div class='icon-container'>
         <span class='garden-icon
           garden-icon--${type}'>
@@ -319,8 +323,7 @@ class Chart extends Component<Props, State> {
           <div
             className={cls(css`
               display: flex;
-              padding-top: 0.5rem;
-            `)}
+            `, "pt-1")}
           >
             {taskTypes.map(type => (
               <div className="ml-1" key={type}>

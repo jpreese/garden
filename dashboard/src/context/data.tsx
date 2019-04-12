@@ -188,7 +188,7 @@ function useApi() {
   ) => {
     return fetchOrReadFromStore(["testResult", fetchTestResult], force, [args])
   }
-  console.log(store)
+
   return {
     store,
     actions: {

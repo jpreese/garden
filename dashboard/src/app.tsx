@@ -35,8 +35,8 @@ import { UiStateProvider, UiStateContext } from "./context/ui"
 
 // Style and align properly
 const Logo = styled.img`
-  height: 67px;
-  width: 160px;
+  width: 10rem;
+  height: auto;
   max-width: 10rem;
 `
 

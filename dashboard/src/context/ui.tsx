@@ -44,7 +44,6 @@ const useUiState = () => {
   }
 
   const selectGraphNode = (node: string) => {
-    console.log("selecting graph node")
     setState({
       ...uiState,
       selectedGraphNode: node,

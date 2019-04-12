@@ -75,7 +75,7 @@ interface IngressesProp {
   ingresses: ServiceIngress[]
 }
 
-const startAndEnd = (str) => {
+const truncateMiddle = (str) => {
   if (str.length > 35) {
     return str.substr(0, 16) + "..." + str.substr(str.length - 16, str.length)
   }
@@ -97,7 +97,7 @@ const Ingresses: React.SFC<IngressesProp> = ({ ingresses }) => {
         return (
           <LinkContainer key={i.path}>
             <ExternalLink href={url} target="_blank">
-              {startAndEnd(url)}
+              {truncateMiddle(url)}
             </ExternalLink>
             <br />
           </LinkContainer>

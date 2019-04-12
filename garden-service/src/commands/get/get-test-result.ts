@@ -13,7 +13,7 @@ import {
   StringParameter,
 } from "../base"
 import * as yaml from "js-yaml"
-import { ParameterError } from "../../exceptions"
+import { NotFoundError } from "../../exceptions"
 import { TestResult } from "../../types/plugin/outputs"
 import { getTestVersion } from "../../tasks/test"
 import { findByName, getNames, highlightYaml } from "../../util/util"
@@ -31,11 +31,11 @@ interface TestResultOutput {
 
 const getTestResultArgs = {
   module: new StringParameter({
-    help: "The name of the module where the test runs.",
+    help: "Module name of where the test runs.",
     required: true,
   }),
   name: new StringParameter({
-    help: "The name of the test.",
+    help: "Test name.",
     required: true,
   }),
 }
@@ -64,28 +64,13 @@ export class GetTestResultCommand extends Command<Args> {
       )}`,
     })
 
-    if (!testName) {
-      const missingTestNameError = new ParameterError(
-        `Failed to find test result, provided 'test' argument (test name) is cannot be empty.`,
-        {},
-      )
-      return { errors: [missingTestNameError] }
-    }
-
-    if (!moduleName) {
-      throw new ParameterError(
-        `Failed to find test result, provided 'module' argument (module name) is cannot be empty.`,
-        {},
-      )
-    }
-
     const graph = await garden.getConfigGraph()
     const module = await graph.getModule(moduleName)
 
     const testConfig = findByName(module.testConfigs, testName)
 
     if (!testConfig) {
-      throw new ParameterError(
+      throw new NotFoundError(
         `Could not find test "${testName}" in module "${moduleName}"`,
         {
           moduleName,
@@ -121,7 +106,7 @@ export class GetTestResultCommand extends Command<Args> {
       log.info(highlightYaml(yamlStatus))
       return { result: output }
     } else {
-      const errorMessage = `Test '${testName}' was found but failed to load test result for it`
+      const errorMessage = `Could not find results for task '${testName}'`
 
       log.info(errorMessage)
 

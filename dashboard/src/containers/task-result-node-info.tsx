@@ -118,15 +118,17 @@ export const TaskResultNodeInfo: React.SFC<TaskResultNodeInfoProps> = ({
                 </h2>
               </div>
             </div>
-            <div className="row pt-1 pb-1">
-              <div className="col-xs-12">
+
+            <div className="row pt-2">
+              <div className="col-xs-5 col-lg-3 pr-1">Type:</div>
+              <div className="col-xs col-lg">
                 <Tag>Run</Tag>
               </div>
             </div>
 
             {info.module && (
               <div className="row pt-1">
-                <div className="col-xs-5 col-lg-3 pr-1">Module Name:</div>
+                <div className="col-xs-5 col-lg-3 pr-1">Module:</div>
                 <div className="col-xs col-lg">{info.module}</div>
               </div>
             )}
@@ -140,13 +142,13 @@ export const TaskResultNodeInfo: React.SFC<TaskResultNodeInfoProps> = ({
 
             {info.startedAt && (
               <div className="row pt-1">
-                <div className="col-xs-5 col-lg-3 pr-1">Started At:</div>
+                <div className="col-xs-5 col-lg-3 pr-1">Started at:</div>
                 <div className="col-xs col-lg">{info.startedAt}</div>
               </div>
             )}
             {info.completedAt && (
               <div className="row pt-1">
-                <div className="col-xs-5 col-lg-3 pr-1">Completed At:</div>
+                <div className="col-xs-5 col-lg-3 pr-1">Completed at:</div>
                 <div className="col-xs col-lg">{info.completedAt}</div>
               </div>
             )}
