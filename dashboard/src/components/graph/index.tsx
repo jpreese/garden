@@ -318,14 +318,19 @@ class Chart extends Component<Props, State> {
               </div>
             ))}
           </div>
-          <div className={css`
-            height: calc(${chartHeightEstimate});
-          `} ref={this._chartRef} id="chart">
-          </div>
-          <div className={cls(css`
-            display: flex;
-            justify-content: space-between;
-          `, "ml-1 mr-1 pb-1")}>
+          <div
+            className={css`
+              height: calc(${chartHeightEstimate});
+            `}
+            ref={this._chartRef}
+            id="chart"
+          />
+          <div
+            className={cls(css`
+              display: flex;
+              justify-content: space-between;
+            `, "ml-1 mr-1 pb-1")}
+          >
             <div className={css`display: flex;`}>
               <Status>{status}</Status>
               {spinner}
