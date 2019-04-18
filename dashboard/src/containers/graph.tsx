@@ -29,7 +29,7 @@ export default () => {
 
   return (
     <LoadWrapper error={error} ErrorComponent={PageError} loading={isLoading}>
-      <Graph message={message} config={config.data} graph={graph.data} />
+      {config.data && graph.data && <Graph message={message} config={config.data} graph={graph.data} />}
     </LoadWrapper>
   )
 }

@@ -41,10 +41,7 @@ const builtinPages: Page[] = [
   },
 ]
 
-interface SidebarProps {
-  isOpen: boolean
-}
-const SidebarContainer: React.SFC<SidebarProps> = () => {
+const SidebarContainer: React.SFC = () => {
   const {
     actions: { loadStatus },
     store: { status },
@@ -56,7 +53,7 @@ const SidebarContainer: React.SFC<SidebarProps> = () => {
 
   if (status.data) {
     pages = flatten(entries(status.data.providers).map(([providerName, providerStatus]) => {
-      return providerStatus.dashboardPages.map(p => ({
+      return (providerStatus.dashboardPages || []).map(p => ({
         ...p,
         path: `/provider/${providerName}/${kebabCase(p.title)}`,
         description: p.description + ` (from provider ${providerName})`,

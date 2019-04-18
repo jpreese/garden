@@ -99,7 +99,7 @@ function drawChart(graph: Graph, width: number, height: number) {
   const svgGroup = svg.append("g")
 
   // Set up zoom support
-  const zoom = d3.zoom().on("zoom", () => {
+  const zoom = d3.zoom<SVGSVGElement, {}>().on("zoom", () => {
     svgGroup.attr("transform", d3.event.transform)
   })
   svg.call(zoom)
@@ -188,6 +188,8 @@ class Chart extends Component<Props, State> {
 
     this._chartRef = React.createRef()
     this.onCheckboxChange = this.onCheckboxChange.bind(this)
+    this._nodes = []
+    this._edges = []
 
     const taskTypes = uniq(this.props.graph.nodes.map(n => n.type))
     const filters = taskTypes.reduce((acc, type) => {
@@ -279,13 +281,15 @@ class Chart extends Component<Props, State> {
     for (const node of this._nodes) {
       if (message.payload.key && node.id === getIdFromTaskKey(message.payload.key)) {
         const nodeEl = document.getElementById(node.id)
-        this.clearClasses(nodeEl)
-        if (message.name === "taskPending") {
-          nodeEl.classList.add("taskPending")
-        } else if (message.name === "taskError") {
-          nodeEl.classList.add("taskError")
-        } else if (message.name === "taskComplete") {
-          nodeEl.classList.add("taskComplete")
+        if (nodeEl) {
+          this.clearClasses(nodeEl)
+          if (message.name === "taskPending") {
+            nodeEl.classList.add("taskPending")
+          } else if (message.name === "taskError") {
+            nodeEl.classList.add("taskError")
+          } else if (message.name === "taskComplete") {
+            nodeEl.classList.add("taskComplete")
+          }
         }
       }
     }
@@ -296,7 +300,7 @@ class Chart extends Component<Props, State> {
     const taskTypes = uniq(this.props.graph.nodes.map(n => n.type))
     const chartHeightEstimate = `100vh - 15rem`
 
-    let spinner = null
+    let spinner: JSX.Element | null = null
     let status = ""
     if (message && message.name !== "taskGraphComplete") {
       status = "Processing..."

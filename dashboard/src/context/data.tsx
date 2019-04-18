@@ -66,7 +66,9 @@ const initialState: Store = sliceNames.reduce((acc, key) => {
   return acc
 }, {}) as Store
 
-export const DataContext = React.createContext<Context | null>(null)
+// We type cast the initial value to avoid having to check whether the context exists in every context consumer.
+// Context is only undefined if the provider is missing which we assume is not the case.
+export const DataContext = React.createContext<Context>({} as Context)
 
 // Updates slices of the store based on the slice key
 function updateSlice(prevState: Store, key: SliceName, sliceState: Object): Store {
@@ -89,15 +91,13 @@ function useApi() {
 
     try {
       const res = args ? await fetchFn(...args) : await fetchFn()
-      setData(prevState => updateSlice(prevState, key, { data: res, error: null }))
+      setData(prevState => updateSlice(prevState, key, { data: res, error: null, loading: false }))
     } catch (error) {
-      setData(prevState => updateSlice(prevState, key, { error }))
+      setData(prevState => updateSlice(prevState, key, { error, loading: false }))
     }
-
-    setData(prevState => updateSlice(prevState, key, { loading: false }))
   }
 
-  const fetchOrReadFromStore = (keyActionPair: KeyActionPair, force: boolean, args = []) => {
+  const fetchOrReadFromStore = (keyActionPair: KeyActionPair, force: boolean, args: any[] = []) => {
     const key = keyActionPair[0]
     const { data, loading } = store[key]
     if (!force && (data || loading)) {
